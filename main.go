@@ -15,7 +15,7 @@ func main() {
 		w.Write([]byte(index))
 	})
 	mux.HandleFunc("/api/matrix/1", func(w http.ResponseWriter, r *http.Request) {
-		var data matrix.Matrix = matrix.RandomMatrix()
+		var data matrix.Matrix = matrix.RandomMatrix(128)
 		w.Header().Add("Content-Type","application/json")
 		w.Write([]byte(data.Serialize()))
 	})
