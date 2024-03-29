@@ -8,8 +8,8 @@
             function blit(context, data) {
                 data.forEach((row,i) => {
                     row.forEach((cell,j) => {
-                        val = (cell*4).toString(16)
-                        context.fillStyle = `#${val}${val}${val}`
+                        val = (cell).toString(16)
+                        context.fillStyle = `#ff${cell.toString(16)}bb`
                         context.fillRect(i*4,j*4,4,4)
                     })
                 })
