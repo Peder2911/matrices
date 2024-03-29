@@ -1,0 +1,27 @@
+
+<html>
+    <head>
+    </head>
+    <body>
+        <canvas id="app" height=512 width=512></canvas>
+        <script>
+            function blit(context, data) {
+                data.forEach((row,i) => {
+                    row.forEach((cell,j) => {
+                        val = (cell*4).toString(16)
+                        context.fillStyle = `#${val}${val}${val}`
+                        context.fillRect(i*4,j*4,4,4)
+                    })
+                })
+            }
+
+            let canvas = document.querySelector("canvas#app")
+            let ctx = canvas.getContext("2d")
+            fetch("api/matrix/1")
+                .then(rsp => rsp.json())
+                .then(data => {
+                    blit(ctx,data)
+                })
+        </script>
+    </body>
+</html>
