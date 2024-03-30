@@ -1,3 +1,4 @@
-dist/
+**/dist/*
+!web/matrices/dist/.gitkeep
 node_modules/
 .parcel-cache/
