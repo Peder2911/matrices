@@ -1,7 +1,7 @@
 const VERTEX_SHADER_SRC = `#version 300 es
 precision mediump float;
 
-in vec2 vertexPosition;
+in vec3 vertexPosition;
 in vec3 vertexColor;
 
 out vec3 fragColor;
@@ -11,13 +11,13 @@ uniform float z; // zoom
 void main()
 {
   mat4 tmat = mat4(
-    1.0       , 1.0       ,0.0       , 0.1       ,
-    1.0       ,-1.0       ,0.0       ,-0.1       ,
-    0.0       , 0.0       ,0.0       , 0.0       ,
-    0.0       , 0.0       ,0.0       , 1.0       
+    1.0       , 1.0       , 0.0      , 0.1       ,
+    1.0       ,-1.0       ,   a      ,-0.1       ,
+    0.0       , 0.0       , 0.0      , 0.0       ,
+    0.0       , 0.0       , 0.0      , 1.0       
   );
   fragColor = vertexColor;
-  gl_Position = vec4(vertexPosition, 0.0, 1.0) * tmat;
+  gl_Position = vec4(vertexPosition, 1.0) * tmat;
 }
 `
 
@@ -104,10 +104,10 @@ class Graphics {
 
     this.gl.vertexAttribPointer(
       this.positionAttributeLocation(),
-      2,
+      3,
       this.gl.FLOAT,
       false, 
-      5 * Float32Array.BYTES_PER_ELEMENT,
+      6 * Float32Array.BYTES_PER_ELEMENT,
       0
     )
 
@@ -116,8 +116,8 @@ class Graphics {
       3,
       this.gl.FLOAT,
       false, 
-      5 * Float32Array.BYTES_PER_ELEMENT,
-      2 * Float32Array.BYTES_PER_ELEMENT,
+      6 * Float32Array.BYTES_PER_ELEMENT,
+      3 * Float32Array.BYTES_PER_ELEMENT,
     )
 
     this.gl.enableVertexAttribArray(this.positionAttributeLocation())
@@ -148,14 +148,15 @@ type Coordinate = {
 }
 
 function square(position: Coordinate, size: Coordinate, color1: Color, color2: Color){
+  let z = Math.random()/20 //position.x/5 //Math.random()
   return new Float32Array([
     // X        Y    R    G    B
-    position.x,          position.y         , color1.red, color1.green, color1.blue,
-    position.x         , position.y - size.y, color2.red, color2.green, color2.blue,
-    position.x + size.x, position.y         , color2.red, color2.green, color2.blue,
-    position.x         , position.y - size.y, color2.red, color2.green, color2.blue,
-    position.x + size.x, position.y - size.y, color1.red, color1.green, color1.blue,
-    position.x + size.x, position.y         , color2.red, color2.green, color2.blue,
+    position.x,          position.y         , z, color1.red, color1.green, color1.blue,
+    position.x         , position.y - size.y, z, color2.red, color2.green, color2.blue,
+    position.x + size.x, position.y         , z, color2.red, color2.green, color2.blue,
+    position.x         , position.y - size.y, z, color2.red, color2.green, color2.blue,
+    position.x + size.x, position.y - size.y, z, color1.red, color1.green, color1.blue,
+    position.x + size.x, position.y         , z, color2.red, color2.green, color2.blue,
   ])
 }
 
@@ -163,14 +164,16 @@ let graphics = new Graphics(VERTEX_SHADER_SRC, FRAG_SHADER_SRC, document.querySe
 let color1 = {red: 0.1, green: 0.6, blue: 0.2}
 let color2 = {red: 0.2, green: 0.8, blue: 0.3}
 
+let squares = []
+for(let i = 0; i < 100; i++){
+  let pos = {x: .4-(((i%10)/10)), y: (Math.floor(i/10)/10)-.5}
+  squares.push(square(pos, {x: 1/10, y: 1/10}, color1, color2))
+}
 function update(){
   let alpha = Math.sin(performance.now()/800)
   graphics.setAlpha(alpha)
   graphics.clear()
-  for(let i = 0; i < 100; i++){
-    let pos = {x: ((i%10)/10)-.5, y: (Math.floor(i/10)/10)-.5}
-    graphics.drawVertices(square(pos, {x: 1/10, y: 1/10}, color1, color2))
-  }
+  squares.forEach((square)=>graphics.drawVertices(square))
   graphics.debugText(`Alpha: ${alpha}`)
   window.requestAnimationFrame(update)
 }
