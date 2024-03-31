@@ -3,9 +3,20 @@ canvas#app {
   box-shadow: 0 0 50px #fab;
 }
 
+canvas#app-text-overlay {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  z-index: 10;
+}
+
 div#container {
   display: grid;
   width: 100vw;
   height: 100vh;
   place-items: center;
+}
+
+div#display {
+  position: relative;
 }
