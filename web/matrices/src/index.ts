@@ -10,14 +10,20 @@ uniform float z; // zoom
 
 void main()
 {
+  float zoom = 0.8;
   mat4 tmat = mat4(
     1.0       , 1.0       , 0.0      , 0.1       ,
-    1.0       ,-1.0       ,   a      ,-0.1       ,
+    1.0       ,-1.0       , 1.0      ,-0.1       ,
     0.0       , 0.0       , 0.0      , 0.0       ,
-    0.0       , 0.0       , 0.0      , 1.0       
+    0.0       , 0.0       , 0.0      , 2.0 - zoom      
   );
-  fragColor = vertexColor;
-  gl_Position = vec4(vertexPosition, 1.0) * tmat;
+  float z = ((sin(((vertexPosition.x*4.0)+a))) * cos((vertexPosition.y*4.0)+a))*0.2;
+  fragColor = vec3(vertexColor.x + (z*0.4), vertexColor.y + (z*.8), vertexColor.z + (z*0.1));
+  gl_Position = vec4(
+    vertexPosition.x,
+    vertexPosition.y,
+    z,
+  1.0) * tmat;
 }
 `
 
@@ -170,7 +176,7 @@ for(let i = 0; i < 100; i++){
   squares.push(square(pos, {x: 1/10, y: 1/10}, color1, color2))
 }
 function update(){
-  let alpha = Math.sin(performance.now()/800)
+  let alpha = (performance.now()/1000)%Math.PI
   graphics.setAlpha(alpha)
   graphics.clear()
   squares.forEach((square)=>graphics.drawVertices(square))
